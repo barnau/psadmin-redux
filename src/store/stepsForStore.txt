@@ -1,0 +1,69 @@
+first create action
+  takes new change and creates object with TYPE and new info
+
+  export function createCourse(course) {
+    return {type: 'CREATE_COURSE', course: course};
+  }
+
+create the reducer
+
+export default function courseReducer(state = [], action) {
+  switch(action.type) {
+    case 'CREATE_COURSE':
+      return [...state,
+        Object.assign({}, action.course)
+      ];
+
+    default:
+      return state;
+  }
+}
+
+Optional.. you can wrap each reducer into a rootReducer and call it index.js
+This just puts all reducers in one place
+
+import {combineReducers} from 'redux';
+import courses from './courseReducer';
+
+const rootReducer = combineReducers({
+  courses: courses
+});
+
+export default rootReducer;
+
+then create the store.
+
+import {createStore, applyMiddleware} from 'redux';
+import rootReducer from '../reducers';
+import reduxImmutableStateInvariant from 'redux-immutable-state-invariant';
+
+export default function configureStore(initialState) {
+  return createStore(
+    rootReducer,
+    initialState,
+    applyMiddleware(reduxImmutableStateInvariant())
+  );
+}
+
+Last... go to main index.js
+
+import Provider and wrap the router passing
+
+import 'babel-polyfill';
+import React from 'react';
+import { render } from 'react-dom';
+import { Router, browserHistory } from 'react-router';
+import routes from './routes';
+import './styles/styles.css';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import configureStore from './store/configureStore';
+import {Provider} from 'react-redux'; // attaches store to react container component;
+
+const store = configureStore();
+render (
+  <Provider store={store}> // Connects componet to redux
+    <Router history={browserHistory} routes={routes}/>
+  </Provider>,
+    document.getElementById('app')
+
+);
