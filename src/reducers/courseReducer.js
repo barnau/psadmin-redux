@@ -1,12 +1,27 @@
 import * as types from '../actions/actionTypes';
+import initialState from './initialState';
 
-export default function courseReducer(state = [], action) {
+export default function courseReducer(state = initialState.courses, action) {
 
   switch(action.type) {
 
     case types.LOAD_COURSES_SUCCESS:
 
       return action.courses; // point at where new state object added with new courses from api
+
+    case types.CREATE_COURSE_SUCCESS:
+
+      return [
+        ...state,
+        Object.assign({}, action.course)
+      ];
+
+    case types.UPDATE_COURSE_SUCCESS:
+
+      return [
+        ...state.filter( course => course.id != action.course.is),
+        Object.assign({}, action.course)
+      ];
 
     default:
       return state;
